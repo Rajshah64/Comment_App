@@ -1,98 +1,201 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Comment App (Backend)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS backend for a comment system, using Drizzle ORM for PostgreSQL migrations and queries, and Supabase for additional backend services.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Project Structure
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ pnpm install
+```
+comment-app/
+├── src/
+│   ├── app.controller.ts
+│   ├── app.module.ts
+│   ├── app.service.ts
+│   ├── auth/                # (auth logic, WIP)
+│   ├── drizzle/
+│   │   ├── schema.ts        # Drizzle ORM schema (users, comments)
+│   │   ├── db.ts            # Drizzle DB connection
+│   │   └── test-connection.ts # DB connection test script
+│   ├── lib/
+│   │   └── supabase.ts      # Supabase client setup
+│   └── main.ts
+├── migrations/              # Drizzle migration files
+│   ├── 0000_keen_the_anarchist.sql
+│   └── meta/_journal.json
+├── drizzle.config.ts        # Drizzle Kit config
+├── .env                     # Environment variables (not committed)
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
-## Compile and run the project
+---
+
+## Tech Stack
+
+- **NestJS**: Node.js backend framework
+- **Drizzle ORM**: TypeScript ORM for PostgreSQL
+- **Supabase**: Used via `@supabase/supabase-js` for additional backend services
+- **PostgreSQL**: Database
+
+---
+
+## Database Schema
+
+Defined in `src/drizzle/schema.ts`:
+
+- **users**
+  - `id` (UUID, PK)
+  - `email` (unique, not null)
+  - `password_hash` (not null)
+  - `created_at` (timestamp, not null)
+
+- **comments**
+  - `id` (UUID, PK)
+  - `author_id` (FK to users, not null)
+  - `parent_id` (FK to comments, nullable)
+  - `content` (text, not null)
+  - `created_at`, `updated_at` (timestamps, not null)
+  - `deleted_at` (timestamp, nullable)
+
+---
+
+## Migrations
+
+- Managed with Drizzle Kit.
+- Migration files are in the `migrations/` folder.
+- Configured via `drizzle.config.ts`:
+
+  ```ts
+  import { defineConfig } from 'drizzle-kit';
+
+  export default defineConfig({
+    schema: './src/drizzle/schema.ts',
+    out: './migrations',
+    dialect: 'postgresql',
+    dbCredentials: {
+      url: process.env.DATABASE_URL!,
+    },
+  });
+  ```
+
+---
+
+## Supabase Integration
+
+- Supabase client is set up in `src/lib/supabase.ts`:
+
+  ```ts
+  import { createClient } from '@supabase/supabase-js';
+  import 'dotenv/config';
+
+  export const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+  );
+  ```
+
+- Requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in your `.env`.
+
+---
+
+## Getting Started
+
+1. **Install dependencies:**
+
+   ```sh
+   pnpm install
+   ```
+
+2. **Set up your `.env` file:**
+
+   ```
+   DATABASE_URL=postgresql://user:password@host:port/database
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+3. **Generate and run migrations:**
+
+   ```sh
+   pnpm dlx drizzle-kit generate
+   pnpm dlx drizzle-kit migrate
+   ```
+
+4. **Start the server:**
+   ```sh
+   pnpm run start:dev
+   ```
+
+---
+
+## Development Scripts
 
 ```bash
-# development
-$ pnpm run start
+# Development mode
+pnpm run start:dev
 
-# watch mode
-$ pnpm run start:dev
+# Build for production
+pnpm run build
 
-# production mode
-$ pnpm run start:prod
+# Run tests
+pnpm run test
+
+# Format code
+pnpm run format
+
+# Lint code
+pnpm run lint
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ pnpm run test
+## Testing
 
-# e2e tests
-$ pnpm run test:e2e
+- Test DB connection: `src/drizzle/test-connection.ts`
+- Run all tests:
+  ```sh
+  pnpm run test
+  ```
 
-# test coverage
-$ pnpm run test:cov
-```
+---
 
-## Deployment
+## Notes
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- The project is a work in progress.
+- Auth logic and more features are being developed.
+- `.env` and other sensitive files are gitignored.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+## Current Status
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+✅ **Completed Today:**
 
-## Resources
+- NestJS project setup with TypeScript
+- Drizzle ORM integration with PostgreSQL
+- Database schema design (users, comments tables)
+- Initial migration generated and configured
+- Supabase client setup
+- Environment variable configuration
+- Project structure and basic controllers
 
-Check out a few resources that may come in handy when working with NestJS:
+🚧 **In Progress:**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- Authentication system
+- Comment CRUD operations
+- API endpoints implementation
 
-## Support
+📋 **TODO:**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- User registration/login endpoints
+- Comment creation, editing, deletion
+- Nested comment threading
+- Input validation and error handling
+- Unit and integration tests
+- API documentation
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+_This README will be updated as the project evolves._
