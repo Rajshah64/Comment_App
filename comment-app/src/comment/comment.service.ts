@@ -8,9 +8,11 @@ import { comments } from '../drizzle/schema';
 import { and, eq, isNotNull, isNull } from 'drizzle-orm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { EditCommentDto } from './dto/edit-comment.dto';
-
+import { NotificationsService } from '../notifications/notifications.service';
 @Injectable()
 export class CommentService {
+  constructor(private readonly notificationsService: NotificationsService) {}
+
   async create(userId: string, dto: CreateCommentDto) {
     console.log('userId:', userId);
     console.log('Create DTO:', dto);
@@ -24,6 +26,14 @@ export class CommentService {
       })
       .returning();
 
+    if (inserted[0].parent_id) {
+      console.log('notifyOnReply called for parent:', inserted[0].parent_id);
+      await this.notificationsService.notifyOnReply(
+        inserted[0].parent_id,
+        inserted[0].id,
+      );
+      console.log('notifyOnReply completed');
+    }
     return inserted[0];
   }
 

@@ -19,7 +19,7 @@ A production-ready NestJS backend for a hierarchical comment system with user au
 
 - **Framework**: NestJS 11.x (Node.js with TypeScript)
 - **Database**: PostgreSQL (via Supabase)
-- **ORM**: Drizzle ORM 0.44.x with TypeScript
+- **ORM**: Drizzle ORM 0.30.x with TypeScript
 - **Authentication**: Supabase Auth (JWT-based)
 - **Validation**: class-validator & class-transformer
 - **Migration**: Drizzle Kit 0.31.x
@@ -31,52 +31,52 @@ A production-ready NestJS backend for a hierarchical comment system with user au
 ```
 comment-app/
 ├── src/
-│   ├── auth/                     # Authentication Module
-│   │   ├── auth.controller.ts    # Auth endpoints (signup, login)
-│   │   ├── auth.service.ts       # Supabase auth integration
-│   │   ├── auth.module.ts        # Auth module configuration
-│   │   ├── supabase-auth.guard.ts # JWT token validation guard
-│   │   ├── dto/                  # Authentication DTOs
-│   │   │   ├── sign-up.dto.ts    # Signup request validation
-│   │   │   └── sign-in.dto.ts    # Login request validation
-│   │   ├── auth.controller.spec.ts # Auth controller tests
-│   │   └── auth.service.spec.ts  # Auth service tests
-│   ├── comment/                  # Comment Module
-│   │   ├── comment.controller.ts # Comment CRUD endpoints
-│   │   ├── comment.service.ts    # Comment business logic & nesting
-│   │   ├── comment.module.ts     # Comment module configuration
-│   │   ├── dto/                  # Comment DTOs
+│   ├── auth/                         # Authentication Module
+│   │   ├── auth.controller.ts        # Auth endpoints (signup, login)
+│   │   ├── auth.service.ts           # Supabase auth integration
+│   │   ├── auth.module.ts            # Auth module configuration
+│   │   ├── supabase-auth.guard.ts    # JWT token validation guard
+│   │   ├── dto/                      # Authentication DTOs
+│   │   │   ├── sign-up.dto.ts        # Signup request validation
+│   │   │   └── sign-in.dto.ts        # Login request validation
+│   │   ├── auth.controller.spec.ts   # Auth controller tests
+│   │   └── auth.service.spec.ts      # Auth service tests
+│   ├── comment/                      # Comment Module
+│   │   ├── comment.controller.ts     # Comment CRUD endpoints
+│   │   ├── comment.service.ts        # Comment business logic & nesting
+│   │   ├── comment.module.ts         # Comment module configuration
+│   │   ├── dto/                      # Comment DTOs
 │   │   │   ├── create-comment.dto.ts # Create comment validation
 │   │   │   └── edit-comment.dto.ts   # Edit comment validation
 │   │   ├── comment.controller.spec.ts # Comment controller tests
 │   │   └── comment.service.spec.ts   # Comment service tests
-│   ├── drizzle/                  # Database Layer
-│   │   ├── schema.ts            # Database schema (comments table)
-│   │   ├── db.ts                # Database connection setup
-│   │   └── test-connection.ts   # Database connectivity test
+│   ├── drizzle/                      # Database Layer
+│   │   ├── schema.ts                 # Database schema (comments table)
+│   │   ├── db.ts                     # Database connection setup
+│   │   └── test-connection.ts        # Database connectivity test
 │   ├── lib/
-│   │   └── supabase.ts          # Supabase client configuration
-│   ├── app.controller.ts        # Root controller (health check, profile)
-│   ├── app.service.ts           # Root service
-│   ├── app.module.ts            # Main application module
-│   └── main.ts                  # Application bootstrap & configuration
+│   │   └── supabase.ts               # Supabase client configuration
+│   ├── app.controller.ts             # Root controller (health check, profile)
+│   ├── app.service.ts                # Root service
+│   ├── app.module.ts                 # Main application module
+│   └── main.ts                       # Application bootstrap & configuration
 ├── test/
-│   ├── app.e2e-spec.ts         # End-to-end tests
-│   └── jest-e2e.json           # E2E test configuration
-├── migrations/                  # Database Migrations
-│   ├── 0000_keen_the_anarchist.sql  # Initial schema
-│   ├── 0001_wise_fat_cobra.sql      # Email field update
-│   ├── 0002_eager_talisman.sql      # Users table removal
-│   └── meta/                        # Migration metadata
-├── dist/                        # Compiled JavaScript output
-├── node_modules/                # Dependencies
-├── drizzle.config.ts           # Drizzle ORM configuration
-├── tsconfig.json               # TypeScript configuration
-├── nest-cli.json               # NestJS CLI configuration
-├── eslint.config.mjs           # ESLint configuration
-├── .prettierrc                 # Prettier configuration
-├── package.json                # Dependencies & scripts
-└── README.md                   # This file
+│   ├── app.e2e-spec.ts               # End-to-end tests
+│   └── jest-e2e.json                 # E2E test configuration
+├── migrations/                       # Database Migrations
+│   ├── 0000_keen_the_anarchist.sql   # Initial schema
+│   ├── 0001_wise_fat_cobra.sql       # Email field update
+│   ├── 0002_eager_talisman.sql       # Users table removal
+│   └── meta/                         # Migration metadata
+├── dist/                             # Compiled JavaScript output
+├── node_modules/                     # Dependencies
+├── drizzle.config.ts                 # Drizzle ORM configuration
+├── tsconfig.json                     # TypeScript configuration
+├── nest-cli.json                     # NestJS CLI configuration
+├── eslint.config.mjs                 # ESLint configuration
+├── .prettierrc                       # Prettier configuration
+├── package.json                      # Dependencies & scripts
+└── README.md                         # This file
 ```
 
 ## 🗄 Database Schema

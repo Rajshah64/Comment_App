@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 
 // COMMENTS TABLE - only table needed since we use Supabase auth
 export const comments = pgTable('comments', {
@@ -17,4 +17,17 @@ export const comments = pgTable('comments', {
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 
   deleted_at: timestamp('deleted_at'),
+});
+
+export const notifications = pgTable('notification', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  recipient_id: uuid('recipient_id').notNull(),
+
+  comment_id: uuid('comment_id')
+    .notNull()
+    .references(() => comments.id, { onDelete: 'cascade' }),
+
+  is_read: boolean('is_read').notNull().default(false),
+
+  created_at: timestamp('created_at').defaultNow().notNull(),
 });
