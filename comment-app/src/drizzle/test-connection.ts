@@ -6,12 +6,23 @@ async function main() {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const db = drizzle(pool, { schema });
 
-  const allUsers = await db.select().from(schema.users);
-  console.log('🟢 Connected! Found', allUsers.length, 'users');
+  // Query Supabase's auth.users table
+  const result = await db.execute(
+    'SELECT COUNT(*) as user_count FROM auth.users',
+  );
+  console.log(
+    '🟢 Connected! Found',
+    result.rows[0].user_count,
+    'users in auth.users',
+  );
+
+  const allComments = await db.select().from(schema.comments);
+  console.log('🟢 Found', allComments.length, 'comments');
+
   await pool.end();
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('🔴 Connection error:', err);
   process.exit(1);
 });
