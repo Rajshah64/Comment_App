@@ -7,15 +7,21 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { User } from "@supabase/supabase-js";
+import { User, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (
+    email: string,
+    password: string
+  ) => Promise<{ error: AuthError | null }>;
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
 }
 

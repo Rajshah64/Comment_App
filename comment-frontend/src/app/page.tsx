@@ -12,7 +12,7 @@ import Notifications from "@/components/Notifications";
 import ProfileDropdown from "@/components/ProfileDropdown";
 
 export default function Home() {
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const {
     comments,
     loading: commentsLoading,

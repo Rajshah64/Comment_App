@@ -107,6 +107,30 @@ export class NotificationsGateway
     this.logger.log(`Notification update sent to user ${userId}`);
   }
 
+  // Method to emit new comment to all users
+  emitNewComment(comment: any) {
+    this.server.emit('newComment', comment);
+    this.logger.log(`New comment broadcasted to all users`);
+  }
+
+  // Method to emit comment update to all users
+  emitCommentUpdate(comment: any) {
+    this.server.emit('commentUpdated', comment);
+    this.logger.log(`Comment update broadcasted to all users`);
+  }
+
+  // Method to emit comment delete to all users
+  emitCommentDelete(commentId: string) {
+    this.server.emit('commentDeleted', { commentId });
+    this.logger.log(`Comment deletion broadcasted to all users`);
+  }
+
+  // Method to emit comment restore to all users
+  emitCommentRestore(comment: any) {
+    this.server.emit('commentRestored', comment);
+    this.logger.log(`Comment restoration broadcasted to all users`);
+  }
+
   @SubscribeMessage('ping')
   handlePing(client: Socket) {
     client.emit('pong');

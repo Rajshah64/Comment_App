@@ -31,6 +31,9 @@ export class CommentService {
       })
       .returning();
 
+    // Emit new comment to all users via WebSocket
+    this.notificationsGateway.emitNewComment(inserted[0]);
+
     // If this is a reply, create notification and emit WebSocket event
     if (inserted[0].parent_id) {
       console.log(
@@ -98,7 +101,15 @@ export class CommentService {
       })
       .where(eq(comments.id, commentId));
 
-    return await db.select().from(comments).where(eq(comments.id, commentId));
+    const [updatedComment] = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.id, commentId));
+
+    // Emit comment update to all users
+    this.notificationsGateway.emitCommentUpdate(updatedComment);
+
+    return updatedComment;
   }
 
   async delete(userId: string, commentId: string) {
@@ -118,6 +129,10 @@ export class CommentService {
       .update(comments)
       .set({ deleted_at: new Date() })
       .where(eq(comments.id, commentId));
+
+    // Emit comment deletion to all users
+    this.notificationsGateway.emitCommentDelete(commentId);
+
     return await db.select().from(comments).where(eq(comments.id, commentId));
   }
 
@@ -144,11 +159,16 @@ export class CommentService {
       throw new ForbiddenException('Restore window expired');
     }
 
-    return await db
+    const [restoredComment] = await db
       .update(comments)
       .set({ deleted_at: null })
       .where(eq(comments.id, commentId))
       .returning();
+
+    // Emit comment restoration to all users
+    this.notificationsGateway.emitCommentRestore(restoredComment);
+
+    return restoredComment;
   }
 
   async getAll(currentUserId?: string) {

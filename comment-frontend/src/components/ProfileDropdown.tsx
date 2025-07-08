@@ -12,13 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  User,
-  MessageSquare,
-  LogOut,
-  Settings,
-  ChevronDown,
-} from "lucide-react";
+import { MessageSquare, LogOut, Settings, ChevronDown } from "lucide-react";
 import UserComments from "./UserComments";
 
 export default function ProfileDropdown() {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import client from "../lib/apiClient";
 import { toast } from "sonner";
+import { useWebSocket } from "./useWebSocket";
 
 export interface Comment {
   id: string;
@@ -30,6 +31,9 @@ export function useComments() {
     }
   }, []);
 
+  // Use WebSocket with callback to refetch comments
+  useWebSocket(fetchComments);
+
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
@@ -38,7 +42,7 @@ export function useComments() {
     try {
       await client.post("/comments", { content, parent_id });
       toast.success("Comment posted!");
-      await fetchComments(); // Refresh comments
+      // Don't refetch here - WebSocket will handle it
       return true;
     } catch (error) {
       toast.error("Failed to post comment");
@@ -51,7 +55,7 @@ export function useComments() {
     try {
       await client.patch(`/comments/${id}`, { content });
       toast.success("Comment updated!");
-      await fetchComments();
+      // Don't refetch here - WebSocket will handle it
       return true;
     } catch (error) {
       toast.error("Failed to update comment");
@@ -64,7 +68,7 @@ export function useComments() {
     try {
       await client.delete(`/comments/${id}`);
       toast.success("Comment deleted!");
-      await fetchComments();
+      // Don't refetch here - WebSocket will handle it
       return true;
     } catch (error) {
       toast.error("Failed to delete comment");
@@ -77,7 +81,7 @@ export function useComments() {
     try {
       await client.patch(`/comments/${id}/restore`);
       toast.success("Comment restored!");
-      await fetchComments();
+      // Don't refetch here - WebSocket will handle it
       return true;
     } catch (error) {
       toast.error("Failed to restore comment");

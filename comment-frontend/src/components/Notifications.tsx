@@ -6,9 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -90,7 +87,7 @@ export default function Notifications() {
 
           {notification.comment && (
             <p className="text-sm text-gray-500 mt-1 truncate">
-              "{notification.comment.content}"
+              &quot;{notification.comment.content}&quot;
             </p>
           )}
 

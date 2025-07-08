@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { useAuth } from '@/context/AuthContext';
+import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
+import { useAuth } from "@/context/AuthContext";
 
-export function useWebSocket() {
+export function useWebSocket(onCommentUpdate?: () => void) {
   const { token, user } = useAuth();
   const socketRef = useRef<Socket | null>(null);
 
@@ -17,7 +17,7 @@ export function useWebSocket() {
     }
 
     // Connect to WebSocket server
-    const socket = io('http://localhost:3600/notifications', {
+    const socket = io("http://localhost:3600/notifications", {
       auth: {
         token: token,
       },
@@ -26,20 +26,41 @@ export function useWebSocket() {
 
     socketRef.current = socket;
 
-    socket.on('connect', () => {
-      console.log('✅ WebSocket connected');
+    socket.on("connect", () => {
+      console.log("✅ WebSocket connected");
     });
 
-    socket.on('connected', (data) => {
-      console.log('✅ WebSocket authenticated for user:', data.userId);
+    socket.on("connected", (data) => {
+      console.log("✅ WebSocket authenticated for user:", data.userId);
     });
 
-    socket.on('disconnect', () => {
-      console.log('❌ WebSocket disconnected');
+    // Listen for comment events
+    socket.on("newComment", (comment) => {
+      console.log("📝 New comment received:", comment);
+      onCommentUpdate?.();
     });
 
-    socket.on('connect_error', (error) => {
-      console.error('❌ WebSocket connection error:', error);
+    socket.on("commentUpdated", (comment) => {
+      console.log("✏️ Comment updated:", comment);
+      onCommentUpdate?.();
+    });
+
+    socket.on("commentDeleted", ({ commentId }) => {
+      console.log("🗑️ Comment deleted:", commentId);
+      onCommentUpdate?.();
+    });
+
+    socket.on("commentRestored", (comment) => {
+      console.log("♻️ Comment restored:", comment);
+      onCommentUpdate?.();
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❌ WebSocket disconnected");
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("❌ WebSocket connection error:", error);
     });
 
     // Cleanup on unmount
@@ -47,7 +68,7 @@ export function useWebSocket() {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [token, user]);
+  }, [token, user, onCommentUpdate]);
 
   return socketRef.current;
-} 
+}
