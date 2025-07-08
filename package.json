@@ -1,0 +1,13 @@
+{
+  "name": "comment-system-deployment",
+  "version": "1.0.0",
+  "description": "Real-time comment system deployment configuration",
+  "scripts": {
+    "build": "cd comment-app && npm install && npm run build",
+    "start": "cd comment-app && npm run start:prod",
+    "start:dev": "cd comment-app && npm run start:dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

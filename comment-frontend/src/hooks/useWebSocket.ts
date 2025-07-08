@@ -17,7 +17,9 @@ export function useWebSocket(onCommentUpdate?: () => void) {
     }
 
     // Connect to WebSocket server
-    const socket = io("http://localhost:3600/notifications", {
+    const API_BASE =
+      process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3600";
+    const socket = io(`${API_BASE}/notifications`, {
       auth: {
         token: token,
       },
