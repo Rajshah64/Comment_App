@@ -38,7 +38,7 @@ This is a complete comment system application consisting of two main components:
 - **Framework**: Next.js 15.3.5 (React 19 + TypeScript)
 - **Styling**: Tailwind CSS 4 with Radix UI components
 - **State Management**: React Context + Custom Hooks
-- **Forms**: React Hook Form with Zod validation
+- **Forms**: React Hook Form 
 - **HTTP Client**: Axios
 - **Real-time**: Socket.IO Client
 - **UI Components**: Radix UI + Lucide React icons
@@ -52,7 +52,6 @@ This is a complete comment system application consisting of two main components:
 - **Real-time**: Custom WebSocket server
 - **Migrations**: Drizzle Kit
 - **Package Manager**: pnpm
-- **Development**: Hot reload, TypeScript compilation
 
 ## Project Architecture
 
@@ -112,7 +111,7 @@ Sanctity_Assignment/
     │       ├── apiClient.ts                # HTTP client configuration
     │       ├── supabase.ts                 # Supabase client
     │       └── utils.ts                    # Utility functions
-    └── package.json                            # Frontend dependencies
+    └── package.json                        # Frontend dependencies
 ```
 
 ## Database Schema
