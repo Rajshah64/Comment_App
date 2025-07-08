@@ -46,7 +46,12 @@ export class CommentController {
   }
 
   @Get()
-  getAll() {
-    return this.commentService.getAll();
+  getAll(@Req() req: Request) {
+    return this.commentService.getAll(req['user']?.id);
+  }
+
+  @Get('my-comments')
+  getMyComments(@Req() req: Request) {
+    return this.commentService.getUserComments(req['user'].id);
   }
 }

@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { db } from '../drizzle/db';
 import { notifications, comments } from '../drizzle/schema';
-import { and, desc, eq} from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
+import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()
 export class NotificationsService {
+  constructor(private readonly notificationsGateway: NotificationsGateway) {}
 
   // 1) List notifications
   async list(userId: string, unreadOnly?: boolean) {
@@ -19,7 +21,7 @@ export class NotificationsService {
       .select()
       .from(notifications)
       .where(whereClause)
-      .orderBy(desc(notifications.created_at)); 
+      .orderBy(desc(notifications.created_at));
   }
 
   // 2) Toggle read/unread
@@ -28,16 +30,25 @@ export class NotificationsService {
       .select()
       .from(notifications)
       .where(
-        and(
-            eq(notifications.id, id),
-            eq(notifications.recipient_id, userId),
-        ),
+        and(eq(notifications.id, id), eq(notifications.recipient_id, userId)),
       );
     if (!notif) throw new NotFoundException('Notification not found');
-    await db
+
+    const [updatedNotification] = await db
       .update(notifications)
       .set({ is_read })
-      .where(eq(notifications.id, id));
+      .where(eq(notifications.id, id))
+      .returning();
+
+    // Emit WebSocket update
+    if (updatedNotification) {
+      this.notificationsGateway.emitNotificationUpdateToUser(
+        userId,
+        updatedNotification,
+      );
+      console.log('Real-time notification update sent to user:', userId);
+    }
+
     return { message: 'Updated' };
   }
 
@@ -47,9 +58,7 @@ export class NotificationsService {
     const [parent] = await db
       .select()
       .from(comments)
-      .where(
-        eq(comments.id, parentId)
-    );
+      .where(eq(comments.id, parentId));
     if (!parent) return; // parent deleted?
     //if (parent.author_id === replyId) return;
     await db.insert(notifications).values({
